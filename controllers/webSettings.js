@@ -39,6 +39,12 @@ exports.getWebSettings = async (req, res) => {
 		}
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ message: 'Server error', error: error });
+		res
+			.status(500)
+			.json({
+				message: 'Server error',
+				user: process.env.MONGO_USER,
+				pass: process.env.MONGO_PASS,
+			});
 	}
 };
