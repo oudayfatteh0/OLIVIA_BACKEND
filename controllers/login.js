@@ -18,7 +18,9 @@ exports.login = async (req, res) => {
 			return res.status(400).json({ message: 'Invalid password' });
 		}
 
-		const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+		const token = jwt.sign({ userId: user._id, name: user.name, type: user.userType }, JWT_SECRET, {
+			expiresIn: '1h',
+		});
 
 		res.json({
 			message: 'Login successful',
@@ -31,7 +33,7 @@ exports.login = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
-	const { email, password, name, userType } = req.body;
+	const { email, password, name, type } = req.body;
 
 	try {
 		const existingUser = await User.findOne({ email });
@@ -40,7 +42,7 @@ exports.register = async (req, res) => {
 		}
 
 		const hashedPassword = await bcrypt.hash(password, 10);
-		const newUser = new User({ email, password: hashedPassword, name, userType });
+		const newUser = new User({ email, password: hashedPassword, name, userType: type });
 		await newUser.save();
 
 		res.status(201).json({ message: 'User created successfully' });
