@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const loginController = require('../controllers/login.js');
 const settingsController = require('../controllers/webSettings.js');
 const usersController = require('../controllers/users.js');
+const investmentsController = require('../controllers/investment.js');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -60,6 +61,14 @@ router.get('/users', usersController.getUsers);
 router.post('/users/:id', usersController.updateUser);
 
 router.delete('/users/:id', usersController.deleteUser);
+
+router.get('/investments', investmentsController.getAllInvestments);
+
+router.post('/investments', investmentsController.createInvestment);
+
+router.delete('/investments/:id', investmentsController.deleteInvestment);
+
+router.put('/investments/:id', investmentsController.updateInvestment);
 
 app.use('/.netlify/functions/app', router);
 
