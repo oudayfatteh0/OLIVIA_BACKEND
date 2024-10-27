@@ -1,10 +1,14 @@
 const express = require('express');
 const serverless = require('serverless-http');
 const mongoose = require('mongoose');
+
 const loginController = require('../controllers/login.js');
 const settingsController = require('../controllers/webSettings.js');
 const usersController = require('../controllers/users.js');
 const investmentsController = require('../controllers/investment.js');
+const productsController = require('../controllers/products.js');
+const mailController = require('../controllers/mail.js');
+
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -69,6 +73,30 @@ router.post('/investments', investmentsController.createInvestment);
 router.delete('/investments/:id', investmentsController.deleteInvestment);
 
 router.put('/investments/:id', investmentsController.updateInvestment);
+
+router.get('/products', productsController.getProducts);
+
+router.get('/products/:id', productsController.getProductById);
+
+router.post('/products', productsController.createProduct);
+
+router.delete('/products/:id', productsController.deleteProduct);
+
+router.put('/products/:id', productsController.updateProduct);
+
+router.get('/mail', mailController.getAllMails);
+
+router.post('/mail', mailController.sendMail);
+
+router.delete('/mail/:id', mailController.deleteMail);
+
+router.get('/mail/unread-count', mailController.getUnreadCount);
+
+router.put('/mail/:id', mailController.markAsRead);
+
+router.put('/mail/all', mailController.markAllAsRead);
+
+router.put('/mail/change-status/:id', mailController.changeStatus);
 
 app.use('/.netlify/functions/app', router);
 
