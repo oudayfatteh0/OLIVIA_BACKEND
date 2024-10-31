@@ -1,6 +1,8 @@
 const express = require('express');
 const serverless = require('serverless-http');
 const mongoose = require('mongoose');
+const multer = require('multer');
+const path = require('path');
 
 const loginController = require('../controllers/login.js');
 const settingsController = require('../controllers/webSettings.js');
@@ -16,6 +18,31 @@ const app = express();
 const router = express.Router();
 
 app.use(express.json());
+
+const storage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, 'uploads/');
+	},
+	filename: (req, file, cb) => {
+		const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+		cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`);
+	},
+});
+
+const upload = multer({ storage: storage });
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+router.post('/upload', upload.single('image'), (req, res) => {
+	if (!req.file) {
+		return res.status(400).json({ message: 'No file uploaded' });
+	}
+
+	res.status(200).json({
+		message: 'Image uploaded successfully',
+		filePath: `/uploads/${req.file.filename}`,
+	});
+});
 
 let isConnected;
 
@@ -89,6 +116,8 @@ router.get('/mail', mailController.getAllMails);
 router.post('/mail', mailController.sendMail);
 
 router.delete('/mail/:id', mailController.deleteMail);
+
+router.delete('/mail/selected/:id', mailController.deleteSelectedMails);
 
 router.get('/mail/unread-count', mailController.getUnreadCount);
 

@@ -30,6 +30,18 @@ exports.getAllMails = async (req, res) => {
 	}
 };
 
+exports.deleteSelectedMails = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const ids = id.split(',');
+		await Mail.deleteMany({ _id: { $in: ids } });
+		res.status(200).json({ message: 'Mails deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ message: 'Server error' });
+	}
+};
+
 exports.deleteMail = async (req, res) => {
 	try {
 		const { id } = req.params;
