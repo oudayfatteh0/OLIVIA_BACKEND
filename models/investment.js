@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const InvestmentSchema = new Schema({
+	reference: {
+		type: String,
+		required: true,
+	},
 	title: {
 		type: String,
 		required: true,
@@ -11,7 +15,7 @@ const InvestmentSchema = new Schema({
 		required: true,
 	},
 	proposedPrice: {
-		type: Number,
+		type: String,
 		required: true,
 	},
 	image: {

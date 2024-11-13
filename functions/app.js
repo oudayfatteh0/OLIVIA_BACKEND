@@ -2,7 +2,6 @@ const express = require('express');
 const serverless = require('serverless-http');
 const mongoose = require('mongoose');
 const multer = require('multer');
-const path = require('path');
 
 const loginController = require('../controllers/login.js');
 const settingsController = require('../controllers/webSettings.js');
@@ -19,30 +18,8 @@ const router = express.Router();
 
 app.use(express.json());
 
-const storage = multer.diskStorage({
-	destination: (req, file, cb) => {
-		cb(null, 'uploads/');
-	},
-	filename: (req, file, cb) => {
-		const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-		cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`);
-	},
-});
-
-const upload = multer({ storage: storage });
-
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-router.post('/upload', upload.single('image'), (req, res) => {
-	if (!req.file) {
-		return res.status(400).json({ message: 'No file uploaded' });
-	}
-
-	res.status(200).json({
-		message: 'Image uploaded successfully',
-		filePath: `/uploads/${req.file.filename}`,
-	});
-});
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 let isConnected;
 
@@ -95,21 +72,23 @@ router.delete('/users/:id', usersController.deleteUser);
 
 router.get('/investments', investmentsController.getAllInvestments);
 
-router.post('/investments', investmentsController.createInvestment);
+router.get('/investments/:id', investmentsController.getInvestmentById);
+
+router.post('/investments', upload.single('image'), investmentsController.createInvestment);
 
 router.delete('/investments/:id', investmentsController.deleteInvestment);
 
-router.put('/investments/:id', investmentsController.updateInvestment);
+router.put('/investments/:id', upload.single('image'), investmentsController.updateInvestment);
 
 router.get('/products', productsController.getProducts);
 
 router.get('/products/:id', productsController.getProductById);
 
-router.post('/products', productsController.createProduct);
+router.post('/products', upload.single('image'), productsController.createProduct);
 
 router.delete('/products/:id', productsController.deleteProduct);
 
-router.put('/products/:id', productsController.updateProduct);
+router.put('/products/:id', upload.single('image'), productsController.updateProduct);
 
 router.get('/mail', mailController.getAllMails);
 
